@@ -1,3 +1,6 @@
+
+
+
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -44,9 +47,9 @@
 
 # Python
 **/__pycache__/
-*.py[cod]
-*$py.class
-*.so
+**/*.py[cod]
+**/*$py.class
+**/*.so
 **/.Python
 **/build/
 **/develop-eggs/

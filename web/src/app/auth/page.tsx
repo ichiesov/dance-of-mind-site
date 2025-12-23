@@ -1,21 +1,84 @@
-import Image from 'next/image';
+'use client';
 
-import wallImg from 'images/wall.webp';
-import { CardsGrid } from '@card-grid/components';
-import { LayoutGrid } from '@/components/ui/layout-grid';
+import { observer } from 'mobx-react-lite';
+import { useEffect } from 'react';
+import { useAuthStore, AuthStep } from './store';
+import { AuthForm, AuthStatus } from './components';
 
-export default function Page() {
-  const phrase = 'я твой голос внутри';
+const AuthPage = observer(() => {
+  const store = useAuthStore();
+
+  useEffect(() => {
+    return () => {
+      store.cleanup();
+    };
+  }, [store]);
+
+  const handleSubmit = async (phoneNumber: string) => {
+    store.setPhoneNumber(phoneNumber);
+    await store.initAuth();
+  };
+
+  const handleReset = () => {
+    store.reset();
+  };
 
   return (
-    <div className="h-screen w-screen overflow-y-hidden overflow-x-auto bg-cover bg-center bg-no-repeat">
-      <Image src={wallImg} alt="Cover Image" className="object-cover" fill />
+    <div className="min-h-screen w-screen bg-black flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Dance of Mind</h1>
+          <p className="text-white/60">Авторизация через Telegram</p>
+        </div>
 
-      <main className="w-full h-full min-w-[1280px] px-2 sm:px-4 py-2 sm:py-4">
-        <CardsGrid />
+        {store.step === AuthStep.PHONE_INPUT && (
+          <AuthForm onSubmit={handleSubmit} isLoading={false} />
+        )}
 
-        {/* <LayoutGrid cards={cards} /> */}
-      </main>
+        {store.step === AuthStep.WAITING_BOT && (
+          <AuthStatus
+            status={store.authStatus}
+            statusText={store.statusText}
+            showBotLink={true}
+            onReset={handleReset}
+          />
+        )}
+
+        {store.step === AuthStep.AUTHENTICATING && (
+          <AuthStatus
+            status={store.authStatus}
+            statusText={store.statusText}
+            showBotLink={false}
+            onReset={handleReset}
+          />
+        )}
+
+        {store.step === AuthStep.AUTHENTICATED && (
+          <AuthStatus
+            status={store.authStatus}
+            statusText={store.statusText}
+            showBotLink={false}
+          />
+        )}
+
+        {store.step === AuthStep.ERROR && (
+          <div className="w-full max-w-md space-y-4">
+            <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4">
+              <p className="text-red-400 text-center">{store.error}</p>
+            </div>
+            <button
+              onClick={handleReset}
+              className="w-full px-6 py-3 bg-white/10 text-white font-medium rounded-lg hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+            >
+              Попробовать снова
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
-}
+});
+
+AuthPage.displayName = 'AuthPage';
+
+export default AuthPage;
