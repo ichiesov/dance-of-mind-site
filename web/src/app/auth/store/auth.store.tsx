@@ -74,7 +74,7 @@ const createAuthStore = () => ({
       this.channel.unsubscribe();
     }
 
-    const channelName = `auth:${this.sessionId}`;
+    const channelName = `auth_events`;
 
     this.channel = supabase.channel(channelName);
 
