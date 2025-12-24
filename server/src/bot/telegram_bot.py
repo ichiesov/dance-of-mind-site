@@ -14,6 +14,7 @@ from telegram.ext import (
 from src.config import settings
 from src.services import AuthService, UserService, EventService
 from src.bot import messages
+from src.utils import to_e164
 
 logger = logging.getLogger(__name__)
 
@@ -33,15 +34,16 @@ class TelegramBot:
         logger.info(f"User {user.id} started the bot")
 
         existing_user = self.user_service.get_user_by_telegram_id(user.id)
+        pending_session = self.auth_service.get_pending_session_by_telegram(user.id)
 
+        # Пользователь зарегистрирован
         if existing_user:
-            pending_session = self.auth_service.get_pending_session_by_telegram(user.id)
-
             if pending_session:
                 await self.event_service.send_bot_started_event(pending_session.id, user.id)
                 await self._show_auth_approval(update, pending_session.id)
             else:
                 await update.message.reply_text(messages.MSG_WELCOME_EXISTING_USER)
+        #  Новый пользователь
         else:
             keyboard = [[KeyboardButton(messages.BUTTON_SHARE_PHONE, request_contact=True)]]
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
@@ -50,6 +52,10 @@ class TelegramBot:
                 messages.MSG_WELCOME_NEW_USER,
                 reply_markup=reply_markup
             )
+
+            #  По юзеру есть запрос на авторизацию -> отправляем event на запрос телефона
+            if pending_session:
+                await self.event_service.send_bot_phone_requested_event(pending_session.id, user.id)
 
     async def handle_contact(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         user = update.effective_user
@@ -65,7 +71,7 @@ class TelegramBot:
             )
             return
 
-        phone_number = contact.phone_number
+        phone_number = to_e164(contact.phone_number)
         logger.info(f"User {user.id} shared phone number: {phone_number}")
 
         pending_session = self.auth_service.get_pending_session_by_phone(phone_number)

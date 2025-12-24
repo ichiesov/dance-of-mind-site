@@ -19,13 +19,7 @@ class EventService:
         data: Optional[Dict[str, Any]] = None
     ) -> bool:
         try:
-            channel_name = f"auth:{session_id}"
-
-            payload = {
-                "type": "broadcast",
-                "event": event_type,
-                "payload": data or {}
-            }
+            channel_name = f"auth_events"
 
             url = f"{self.supabase_url}/realtime/v1/api/broadcast"
 
@@ -39,8 +33,11 @@ class EventService:
                 response = await client.post(
                     url,
                     json={
-                        "channel": channel_name,
-                        "payload": payload
+                        "messages": [{
+                            "topic": channel_name,
+                            "event": event_type,
+                            "payload": data or {}
+                        }]
                     },
                     headers=headers
                 )
@@ -60,6 +57,13 @@ class EventService:
         return await self.send_auth_event(
             session_id=session_id,
             event_type="bot_started",
+            data={"telegram_id": telegram_id}
+        )
+
+    async def send_bot_phone_requested_event(self, session_id: str, telegram_id: int) -> bool:
+        return await self.send_auth_event(
+            session_id=session_id,
+            event_type="phone_requested",
             data={"telegram_id": telegram_id}
         )
 

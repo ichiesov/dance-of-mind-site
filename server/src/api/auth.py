@@ -7,6 +7,8 @@ from src.models import AuthSessionResponse, TokenPair, AuthStatus
 from src.services import AuthService, UserService
 from src.bot import get_bot
 
+from src.utils import to_e164
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/auth", tags=["authentication"])
@@ -22,15 +24,18 @@ async def init_auth(request: InitAuthRequest) -> AuthSessionResponse:
         auth_service = AuthService()
         user_service = UserService()
 
-        session = auth_service.create_auth_session(request.phone_number)
+        phone_number = to_e164(request.phone_number)
 
-        user = user_service.get_user_by_phone(request.phone_number)
+        session = auth_service.create_auth_session(phone_number)
 
+        user = user_service.get_user_by_phone(phone_number)
+
+        # Есть связка с ботом -> отправляем запрос на авторизацию
         if user and user.telegram_id:
             bot = get_bot()
             await bot.notify_new_auth_request(user.telegram_id, session.id)
 
-        logger.info(f"Auth session created: {session.id} for {request.phone_number}")
+        logger.info(f"Auth session created: {session.id} for {phone_number}")
 
         return AuthSessionResponse(
             session_id=session.id,

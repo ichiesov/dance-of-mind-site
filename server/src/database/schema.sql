@@ -10,8 +10,6 @@ CREATE TABLE IF NOT EXISTS users (
     phone_number VARCHAR(20) UNIQUE NOT NULL,
     telegram_id BIGINT UNIQUE,
     telegram_username VARCHAR(255),
-    first_name VARCHAR(255),
-    last_name VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
