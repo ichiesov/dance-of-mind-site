@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.config import settings
-from src.api import auth_router
+from src.api import auth_router, progress_router
 from src.bot import get_bot
 
 logging.basicConfig(
@@ -53,6 +53,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(progress_router)
 
 
 @app.get("/")

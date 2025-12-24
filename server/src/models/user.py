@@ -15,6 +15,7 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: str = Field(..., description="User UUID")
+    completed_quests: list[str] = Field(default_factory=list, description="Completed quest IDs")
     created_at: datetime = Field(..., description="Creation timestamp")
     updated_at: datetime = Field(..., description="Last update timestamp")
 
