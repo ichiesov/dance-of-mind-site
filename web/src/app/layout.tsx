@@ -7,6 +7,7 @@ import { AppStoreProvider } from '@store/AppStoreProvider';
 import { AudioPlayerProvider, useAudioPlayer } from 'react-use-audio-player';
 import { useEffect } from 'react';
 import { AuthErrorProvider } from '@/components/auth-error-provider';
+import { AuthGuard } from '@/components/auth-guard';
 
 // Local primary font for all site text
 const customSans = localFont({
@@ -44,7 +45,9 @@ export default function RootLayout({
       >
         <AudioPlayerProvider>
           <AppStoreProvider>
-            <AuthErrorProvider>{children}</AuthErrorProvider>
+            <AuthErrorProvider>
+              <AuthGuard>{children}</AuthGuard>
+            </AuthErrorProvider>
           </AppStoreProvider>
         </AudioPlayerProvider>
       </body>

@@ -2,17 +2,26 @@
 
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuthStore, AuthStep } from './store';
 import { AuthForm, AuthStatus } from './components';
 
 const AuthPage = observer(() => {
   const store = useAuthStore();
+  const router = useRouter();
 
   useEffect(() => {
     return () => {
       store.cleanup();
     };
   }, [store]);
+
+  // Редирект на comedy-tragedy после успешной авторизации
+  useEffect(() => {
+    if (store.step === AuthStep.AUTHENTICATED) {
+      router.push('/comedy-tragedy');
+    }
+  }, [store.step, router]);
 
   const handleSubmit = async (phoneNumber: string) => {
     store.setPhoneNumber(phoneNumber);
