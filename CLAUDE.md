@@ -110,7 +110,7 @@ src/app/{page-name}/
 ```
 
 **Current Pages**:
-- `card-grid` - Card matching quest with letter collection
+- `cards` - Card matching quest with letter collection
 - `comedy-tragedy` - Audio-visual quest with mask images
 - `who-are-you` - Floating words interactive experience
 
@@ -120,7 +120,7 @@ The project uses TypeScript path aliases (defined in `tsconfig.json`):
 
 ```typescript
 // Page-specific aliases (use these for imports within each page)
-import { Component } from '@card-grid/components';
+import { Component } from '@cards/components';
 import { config } from '@comedy-tragedy/config';
 import { store } from '@who-are-you/store';
 
@@ -138,7 +138,7 @@ import audio from 'audio/background.mp3';
 import { Component } from '@/components/ui/comet-card';
 ```
 
-**Important**: When working within a specific page directory, prefer page-specific aliases (`@card-grid/*`, `@comedy-tragedy/*`, `@who-are-you/*`) over generic `@/*` for clarity.
+**Important**: When working within a specific page directory, prefer page-specific aliases (`@cards/*`, `@comedy-tragedy/*`, `@who-are-you/*`) over generic `@/*` for clarity.
 
 ### Animation & Interactivity
 

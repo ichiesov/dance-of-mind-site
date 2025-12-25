@@ -2,7 +2,7 @@ import { useLocalObservable } from 'mobx-react-lite';
 import { shuffle, splitToLetters } from '@utils';
 import { TIdName } from '@models';
 
-import { QUEST_CONFIG, QUEST_PHRASE } from '@card-grid/config';
+import { QUEST_CONFIG, QUEST_PHRASE } from '@cards/config';
 
 const getLetters = (source?: string): TIdName<string>[] => {
   if (!source) {

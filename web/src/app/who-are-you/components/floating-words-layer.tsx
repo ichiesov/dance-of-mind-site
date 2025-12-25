@@ -17,7 +17,7 @@ export const FloatingWordsLayer = observer(({ viewport }: TProps) => {
 
   useEffect(() => {
     if (isSolved) {
-      router.push(EPage.CardGrid);
+      router.push(EPage.Cards);
     }
   }, [store.isSolved]);
 

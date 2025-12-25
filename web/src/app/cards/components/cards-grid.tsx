@@ -2,15 +2,15 @@
 
 import { useRef, useState } from 'react';
 
-import { CARDS } from '@card-grid/config';
-import { useCardsStore } from '@card-grid/store';
+import { CARDS } from '@cards/config';
+import { useCardsStore } from '@cards/store';
 
 import { cn } from '@utils';
 import { AnimatePresence, LayoutGroup, motion } from 'motion/react';
 
-import { QuestSection } from '@card-grid/components/quest-section';
+import { QuestSection } from '@cards/components/quest-section';
 import { observer } from 'mobx-react-lite';
-import { Card } from '@card-grid/components/Card';
+import { Card } from '@cards/components/Card';
 
 export const CardsGrid = observer(() => {
   const store = useCardsStore();

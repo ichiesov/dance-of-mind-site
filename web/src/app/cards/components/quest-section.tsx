@@ -1,8 +1,8 @@
 'use client';
 
-import { CardFace } from '@card-grid/components/card-face';
-import { Letter } from '@card-grid/components/letter/letter';
-import { useLettersStore } from '@card-grid/store';
+import { CardFace } from '@cards/components/card-face';
+import { Letter } from '@cards/components/letter/letter';
+import { useLettersStore } from '@cards/store';
 import { useKeyboardShortcut } from '@hooks';
 import { observer } from 'mobx-react-lite';
 import { motion } from 'motion/react';

@@ -6,7 +6,7 @@ import { observer } from 'mobx-react-lite';
 import { cn } from '@utils';
 
 import { TIdName } from '@models';
-import { TLettersStore } from '@card-grid/store';
+import { TLettersStore } from '@cards/store';
 
 import styles from './letter.module.css';
 

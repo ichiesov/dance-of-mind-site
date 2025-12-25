@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
 import wallImg from 'images/wall.webp';
-import { CardsGrid } from '@card-grid/components';
+import { CardsGrid } from '@cards/components';
 import { LayoutGrid } from '@/components/ui/layout-grid';
 
 export default function Page() {

@@ -1,4 +1,4 @@
-import { CARDS, CARDS_TOTAL_COUNT } from '@card-grid/config';
+import { CARDS, CARDS_TOTAL_COUNT } from '@cards/config';
 import { useLocalObservable } from 'mobx-react-lite';
 
 const createLocalStore = () => ({
