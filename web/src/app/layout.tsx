@@ -6,6 +6,7 @@ import './globals.css';
 import { AppStoreProvider } from '@store/AppStoreProvider';
 import { AudioPlayerProvider, useAudioPlayer } from 'react-use-audio-player';
 import { useEffect } from 'react';
+import { AuthErrorProvider } from '@/components/auth-error-provider';
 
 // Local primary font for all site text
 const customSans = localFont({
@@ -42,7 +43,9 @@ export default function RootLayout({
         className={`${customSans.className} ${customSans.variable} ${geistMono.variable} antialiased w-screen min-h-screen`}
       >
         <AudioPlayerProvider>
-          <AppStoreProvider>{children}</AppStoreProvider>
+          <AppStoreProvider>
+            <AuthErrorProvider>{children}</AuthErrorProvider>
+          </AppStoreProvider>
         </AudioPlayerProvider>
       </body>
     </html>

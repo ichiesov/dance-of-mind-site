@@ -162,7 +162,8 @@ class AuthService:
         return TokenPair(
             access_token=tokens["access_token"],
             refresh_token=tokens["refresh_token"],
-            expires_in=settings.access_token_expire_minutes * 60,
+            access_expires_in=settings.access_token_expire_minutes * 60,
+            refresh_expires_in=settings.refresh_token_expire_days * 24 * 60 * 60,
         )
 
     def _expire_old_sessions(self, phone_number: str) -> None:

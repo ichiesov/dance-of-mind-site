@@ -36,4 +36,5 @@ class AuthSessionResponse(BaseModel):
 class TokenPair(BaseModel):
     access_token: str = Field(..., description="Access JWT token")
     refresh_token: str = Field(..., description="Refresh JWT token")
-    expires_in: int = Field(..., description="Access token expiration in seconds")
+    access_expires_in: int = Field(..., description="Access token expiration in seconds")
+    refresh_expires_in: int = Field(..., description="Refresh token expiration in seconds")

@@ -109,8 +109,14 @@ const createAuthStore = () => ({
       this.tokens = tokens;
       this.step = AuthStep.AUTHENTICATED;
 
-      localStorage.setItem('access_token', tokens.access_token);
-      localStorage.setItem('refresh_token', tokens.refresh_token);
+      // Используем TokenStorage для сохранения токенов с временем истечения
+      const { TokenStorage } = await import('@/lib/token-storage');
+      TokenStorage.saveTokens(
+        tokens.access_token,
+        tokens.access_expires_in,
+        tokens.refresh_token,
+        tokens.refresh_expires_in
+      );
     } catch (err) {
       this.setError('Не удалось получить токены');
       console.error('Fetch tokens error:', err);
@@ -124,7 +130,7 @@ const createAuthStore = () => ({
     }
   },
 
-  reset() {
+  async reset() {
     this.cleanup();
     this.phoneNumber = '';
     this.sessionId = '';
@@ -132,6 +138,10 @@ const createAuthStore = () => ({
     this.authStatus = AuthStatus.PENDING;
     this.error = '';
     this.tokens = null;
+
+    // Очищаем токены из storage
+    const { TokenStorage } = await import('@/lib/token-storage');
+    TokenStorage.clearTokens();
   },
 });
 

@@ -89,14 +89,19 @@ async def get_auth_tokens(session_id: str) -> TokenPair:
         )
 
 
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str = Field(..., description="Refresh token")
+
+
 @router.post("/refresh", response_model=TokenPair)
-async def refresh_token(refresh_token: str) -> TokenPair:
+async def refresh_token(request: RefreshTokenRequest) -> TokenPair:
     try:
         from src.services import JWTService
+        from src.config import settings
 
         jwt_service = JWTService()
 
-        payload = jwt_service.verify_token(refresh_token, token_type="refresh")
+        payload = jwt_service.verify_token(request.refresh_token, token_type="refresh")
 
         if not payload:
             raise HTTPException(
@@ -118,7 +123,8 @@ async def refresh_token(refresh_token: str) -> TokenPair:
         return TokenPair(
             access_token=tokens["access_token"],
             refresh_token=tokens["refresh_token"],
-            expires_in=jwt_service.settings.access_token_expire_minutes * 60,
+            access_expires_in=settings.access_token_expire_minutes * 60,
+            refresh_expires_in=settings.refresh_token_expire_days * 24 * 60 * 60,
         )
 
     except HTTPException:
