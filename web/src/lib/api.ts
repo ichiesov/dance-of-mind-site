@@ -24,7 +24,7 @@ export interface RefreshTokenResponse {
 }
 
 export interface ProgressResponse {
-  solved_cards: string[];
+  completed_quests: string[];
 }
 
 export class ApiClient {

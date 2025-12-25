@@ -12,15 +12,20 @@ import { QuestSection } from '@cards/components/quest-section';
 import { observer } from 'mobx-react-lite';
 import { Card } from '@cards/components/Card';
 
+import { apiClient } from '@/lib/api';
+
 export const CardsGrid = observer(() => {
   const store = useCardsStore();
+
+
+
 
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
 
   // Загружаем прогресс при монтировании компонента
   useEffect(() => {
     store.loadProgress();
-  }, [store]);
+  }, []);
 
   const handleClick = (cardId: string) => {
     setSelectedCardId(cardId);
@@ -40,10 +45,17 @@ export const CardsGrid = observer(() => {
     console.log('SOLVE QUEST', questId);
 
     // Отмечаем карту как решенную и сохраняем прогресс
-    await store.markAsSolved(questId);
+    store.markAsSolved(questId);
 
     // Переходим к следующему таргету
     store.nextTarget();
+
+    try {
+      // Сохраняем на сервере
+      await apiClient.saveProgress(questId);
+    } catch (error) {
+      console.error('Failed to save progress:', error);    
+    }
   };
 
   const handleQuestExit = () => {
@@ -51,7 +63,7 @@ export const CardsGrid = observer(() => {
   };
 
   // Показываем loader пока загружается прогресс
-  if (store.isLoading) {
+  if (store.isLoading) {  
     return (
       <div className="w-full h-full flex items-center justify-center">
         <div className="text-white text-xl">Загрузка прогресса...</div>

@@ -13,6 +13,7 @@ const createLocalStore = () => ({
   },
 
   isSolved(cardId: string) {
+    //console.log('CHECK SOLVED', cardId, this.solvedCards.has(cardId));
     return this.solvedCards.has(cardId);
   },
 
@@ -26,7 +27,7 @@ const createLocalStore = () => ({
       const progress = await apiClient.getProgress();
 
       // Инициализируем solvedCards из загруженного прогресса
-      this.solvedCards = new Set(progress.solved_cards);
+      this.solvedCards = new Set(progress.completed_quests);
 
       // Выбираем первый таргет среди не решенных карт
       this.nextTarget();
@@ -37,23 +38,13 @@ const createLocalStore = () => ({
     }
   },
 
-  async markAsSolved(cardId: string) {
+   markAsSolved(cardId: string) {
     // Проверяем, что карта еще не решена
     if (this.solvedCards.has(cardId)) {
       return;
     }
 
-    try {
-      // Добавляем в локальный стор сразу
-      this.solvedCards.add(cardId);
-
-      // Сохраняем на сервере
-      await apiClient.saveProgress(cardId);
-    } catch (error) {
-      console.error('Failed to save progress:', error);
-      // В случае ошибки убираем из локального стора
-      this.solvedCards.delete(cardId);
-    }
+    this.solvedCards.add(cardId);
   },
 
   nextTarget() {
