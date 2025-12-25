@@ -1,11 +1,12 @@
 import logging
 
-from fastapi import APIRouter, HTTPException, status, Header
+from fastapi import APIRouter, HTTPException, status, Header, Depends
 from pydantic import BaseModel, Field
 
 from src.models import AuthSessionResponse, TokenPair, AuthStatus
 from src.services import AuthService, UserService
 from src.bot import get_bot
+from src.api.dependencies import get_current_user_id
 
 from src.utils import to_e164
 
@@ -138,30 +139,14 @@ async def refresh_token(request: RefreshTokenRequest) -> TokenPair:
 
 
 @router.get("/me")
-async def get_current_user(authorization: str = Header(...)):
+async def get_current_user(user_id: str = Depends(get_current_user_id)):
+    """
+    Получить информацию о текущем пользователе.
+
+    Requires:
+        - Valid access token (проверяется декодирование + срок действия)
+    """
     try:
-        from src.services import JWTService
-
-        if not authorization.startswith("Bearer "):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid authorization header",
-            )
-
-        token = authorization.replace("Bearer ", "")
-        jwt_service = JWTService()
-
-        payload = jwt_service.verify_token(token, token_type="access")
-
-        if not payload:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid access token",
-            )
-
-        user_service = UserService()
-        user_id = payload.get("sub")
-
         from src.database import get_supabase_client
         db = get_supabase_client()
         response = db.table("users").select("*").eq("id", user_id).execute()

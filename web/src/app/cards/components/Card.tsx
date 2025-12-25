@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { CometCard } from '@/components/ui/comet-card';
 import { cn } from '@utils';
 import { motion, useAnimationControls } from 'motion/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import cardPlaceholder from 'images/cards/back.svg';
 
@@ -13,15 +13,23 @@ import './card-animated-border.scss';
 type Props = {
   cardId: string;
   isTarget: boolean;
+  isSolved: boolean;
   onRevealed: (cardId: string) => void;
 };
 
 import cardFace from 'images/cards/placeholder.svg';
 
-export const Card = ({ cardId, isTarget, onRevealed }: Props) => {
+export const Card = ({ cardId, isTarget, isSolved, onRevealed }: Props) => {
   const controls = useAnimationControls();
-  const [revealed, setRevealed] = useState(false);
+  const [revealed, setRevealed] = useState(isSolved);
   const [spinning, setSpinning] = useState(false);
+
+  // Синхронизируем локальное состояние с пропом isSolved
+  useEffect(() => {
+    if (isSolved) {
+      setRevealed(true);
+    }
+  }, [isSolved]);
 
   const handleClick = async () => {
     if (spinning) return;

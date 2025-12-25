@@ -56,19 +56,43 @@ class JWTService:
 
     @staticmethod
     def verify_token(token: str, token_type: str = "access") -> Optional[Dict]:
+        """
+        Проверяет валидность JWT токена.
+
+        Выполняет следующие проверки:
+        1. Декодирование токена с помощью серверного ключа (JWT_SECRET_KEY)
+        2. Проверка срока действия токена (exp claim) - автоматически через jwt.decode
+        3. Проверка типа токена (access/refresh)
+
+        Args:
+            token: JWT токен для проверки
+            token_type: Ожидаемый тип токена ("access" или "refresh")
+
+        Returns:
+            Optional[Dict]: Payload токена если валиден, None если невалиден или истек
+
+        Note:
+            jwt.decode() автоматически проверяет:
+            - Подпись токена (декодирование серверным ключом)
+            - Срок действия (exp claim) - выбрасывает ExpiredSignatureError
+            - Целостность токена (алгоритм подписи)
+        """
         try:
+            # jwt.decode проверяет подпись и срок действия
             payload = jwt.decode(
                 token,
                 settings.jwt_secret_key,
                 algorithms=[settings.jwt_algorithm]
             )
 
+            # Дополнительная проверка типа токена
             if payload.get("type") != token_type:
                 return None
 
             return payload
 
         except InvalidTokenError:
+            # Ловим все ошибки JWT: невалидная подпись, истекший токен, и т.д.
             return None
 
     @staticmethod

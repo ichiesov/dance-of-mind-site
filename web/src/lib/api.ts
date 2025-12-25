@@ -23,6 +23,10 @@ export interface RefreshTokenResponse {
   refresh_expires_in: number;
 }
 
+export interface ProgressResponse {
+  solved_cards: string[];
+}
+
 export class ApiClient {
   private baseUrl: string;
   private refreshPromise: Promise<void> | null = null;
@@ -177,6 +181,37 @@ export class ApiClient {
     }
 
     return response.json();
+  }
+
+  async getProgress(): Promise<ProgressResponse> {
+    const response = await this.fetchWithAuth(`${this.baseUrl}/api/progress`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get progress');
+    }
+
+    return response.json();
+  }
+
+  async saveProgress(cardId: string): Promise<void> {
+    const response = await this.fetchWithAuth(`${this.baseUrl}/api/progress/complete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        quest_id: cardId,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to save progress');
+    }
   }
 }
 

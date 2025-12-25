@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { CARDS } from '@cards/config';
 import { useCardsStore } from '@cards/store';
@@ -17,6 +17,11 @@ export const CardsGrid = observer(() => {
 
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
 
+  // Загружаем прогресс при монтировании компонента
+  useEffect(() => {
+    store.loadProgress();
+  }, [store]);
+
   const handleClick = (cardId: string) => {
     setSelectedCardId(cardId);
 
@@ -31,14 +36,28 @@ export const CardsGrid = observer(() => {
     store.setActiveQuest(cardId);
   };
 
-  const handleQuestSolve = (questId: string) => {
+  const handleQuestSolve = async (questId: string) => {
     console.log('SOLVE QUEST', questId);
+
+    // Отмечаем карту как решенную и сохраняем прогресс
+    await store.markAsSolved(questId);
+
+    // Переходим к следующему таргету
     store.nextTarget();
   };
 
   const handleQuestExit = () => {
     store.setActiveQuest('');
   };
+
+  // Показываем loader пока загружается прогресс
+  if (store.isLoading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <div className="text-white text-xl">Загрузка прогресса...</div>
+      </div>
+    );
+  }
 
   return (
     <LayoutGroup>
@@ -63,6 +82,7 @@ export const CardsGrid = observer(() => {
               <Card
                 cardId={cardId}
                 isTarget={store.isTarget(cardId)}
+                isSolved={store.isSolved(cardId)}
                 onRevealed={handleCardReveal}
               />
             </div>
