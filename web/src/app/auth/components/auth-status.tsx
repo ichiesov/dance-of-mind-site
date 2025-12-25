@@ -2,6 +2,7 @@
 
 import { observer } from 'mobx-react-lite';
 import { AuthStatus as AuthStatusEnum } from '../store';
+import { FormContainer } from './form-container';
 
 interface AuthStatusProps {
   status: AuthStatusEnum;
@@ -18,7 +19,8 @@ export const AuthStatus = observer(
     const isApproved = status === AuthStatusEnum.APPROVED;
 
     return (
-      <div className="w-full max-w-md space-y-6">
+      <FormContainer>
+        <div className="space-y-6">
         <div className="text-center space-y-4">
           <div className="space-y-2">
             <p className="text-white/70 text-sm">Статус авторизации</p>
@@ -74,7 +76,8 @@ export const AuthStatus = observer(
             />
           </div>
         )}
-      </div>
+        </div>
+      </FormContainer>
     );
   }
 );

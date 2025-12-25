@@ -1,10 +1,13 @@
 'use client';
 
+import Image from 'next/image';
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore, AuthStep } from './store';
-import { AuthForm, AuthStatus } from './components';
+import { AuthForm, AuthStatus, FormContainer } from './components';
+
+import wallImg from 'images/wall.webp';
 
 const AuthPage = observer(() => {
   const store = useAuthStore();
@@ -33,15 +36,25 @@ const AuthPage = observer(() => {
   };
 
   return (
-    <div className="min-h-screen w-screen bg-black flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen w-screen bg-black flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background image */}
+      <Image
+        src={wallImg}
+        alt="Background"
+        className="object-cover"
+        fill
+        priority
+      />
+
+      {/* Content */}
+      <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Dance of Mind</h1>
           <p className="text-white/60">Авторизация через Telegram</p>
         </div>
 
         {store.step === AuthStep.PHONE_INPUT && (
-          <AuthForm onSubmit={handleSubmit} isLoading={false} />
+          <AuthForm onSubmit={handleSubmit} isLoading={store.isLoading} />
         )}
 
         {store.step === AuthStep.WAITING_BOT && (
@@ -71,17 +84,19 @@ const AuthPage = observer(() => {
         )}
 
         {store.step === AuthStep.ERROR && (
-          <div className="w-full max-w-md space-y-4">
-            <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4">
-              <p className="text-red-400 text-center">{store.error}</p>
+          <FormContainer>
+            <div className="space-y-4">
+              <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4">
+                <p className="text-red-400 text-center">{store.error}</p>
+              </div>
+              <button
+                onClick={handleReset}
+                className="w-full px-6 py-3 bg-white/10 text-white font-medium rounded-lg hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+              >
+                Попробовать снова
+              </button>
             </div>
-            <button
-              onClick={handleReset}
-              className="w-full px-6 py-3 bg-white/10 text-white font-medium rounded-lg hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
-            >
-              Попробовать снова
-            </button>
-          </div>
+          </FormContainer>
         )}
       </div>
     </div>

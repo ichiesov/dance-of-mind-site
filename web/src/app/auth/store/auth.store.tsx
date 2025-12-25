@@ -25,6 +25,7 @@ const createAuthStore = () => ({
   step: AuthStep.PHONE_INPUT,
   authStatus: AuthStatus.PENDING,
   error: '',
+  isLoading: false,
   tokens: null as { access_token: string; refresh_token: string } | null,
   channel: null as RealtimeChannel | null,
 
@@ -57,6 +58,7 @@ const createAuthStore = () => ({
   async initAuth() {
     try {
       this.error = '';
+      this.isLoading = true;
 
       const response = await apiClient.initAuth(this.phoneNumber);
       this.sessionId = response.session_id;
@@ -66,6 +68,8 @@ const createAuthStore = () => ({
     } catch (err) {
       this.setError('Не удалось инициализировать авторизацию');
       console.error('Init auth error:', err);
+    } finally {
+      this.isLoading = false;
     }
   },
 
