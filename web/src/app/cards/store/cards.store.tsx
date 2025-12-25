@@ -1,19 +1,16 @@
 import { CARDS, CARDS_TOTAL_COUNT } from '@cards/config';
 import { useLocalObservable } from 'mobx-react-lite';
-import { apiClient } from '@/lib/api';
 
 const createLocalStore = () => ({
   target: '2-of-clubs',
   activeQuest: '',
   solvedCards: new Set<string>(),
-  isLoading: false,
 
   isTarget(cardId: string) {
     return this.target === cardId;
   },
 
   isSolved(cardId: string) {
-    //console.log('CHECK SOLVED', cardId, this.solvedCards.has(cardId));
     return this.solvedCards.has(cardId);
   },
 
@@ -21,24 +18,15 @@ const createLocalStore = () => ({
     this.activeQuest = cardId;
   },
 
-  async loadProgress() {
-    try {
-      this.isLoading = true;
-      const progress = await apiClient.getProgress();
+  initializeProgress(completedQuests: string[]) {
+    // Инициализируем solvedCards из загруженного прогресса
+    this.solvedCards = new Set(completedQuests);
 
-      // Инициализируем solvedCards из загруженного прогресса
-      this.solvedCards = new Set(progress.completed_quests);
-
-      // Выбираем первый таргет среди не решенных карт
-      this.nextTarget();
-    } catch (error) {
-      console.error('Failed to load progress:', error);
-    } finally {
-      this.isLoading = false;
-    }
+    // Выбираем первый таргет среди не решенных карт
+    this.nextTarget();
   },
 
-   markAsSolved(cardId: string) {
+  markAsSolved(cardId: string) {
     // Проверяем, что карта еще не решена
     if (this.solvedCards.has(cardId)) {
       return;

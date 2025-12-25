@@ -14,18 +14,19 @@ import { Card } from '@cards/components/Card';
 
 import { apiClient } from '@/lib/api';
 
-export const CardsGrid = observer(() => {
+interface CardsGridProps {
+  initialProgress: string[];
+}
+
+export const CardsGrid = observer(({ initialProgress }: CardsGridProps) => {
   const store = useCardsStore();
-
-
-
 
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
 
-  // Загружаем прогресс при монтировании компонента
+  // Инициализируем store с полученным прогрессом
   useEffect(() => {
-    store.loadProgress();
-  }, []);
+    store.initializeProgress(initialProgress);
+  }, [initialProgress]);
 
   const handleClick = (cardId: string) => {
     setSelectedCardId(cardId);
@@ -61,15 +62,6 @@ export const CardsGrid = observer(() => {
   const handleQuestExit = () => {
     store.setActiveQuest('');
   };
-
-  // Показываем loader пока загружается прогресс
-  if (store.isLoading) {  
-    return (
-      <div className="w-full h-full flex items-center justify-center">
-        <div className="text-white text-xl">Загрузка прогресса...</div>
-      </div>
-    );
-  }
 
   return (
     <LayoutGroup>
