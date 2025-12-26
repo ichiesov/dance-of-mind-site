@@ -98,7 +98,7 @@ class RefreshTokenRequest(BaseModel):
 async def refresh_token(request: RefreshTokenRequest) -> TokenPair:
     try:
         from src.services import JWTService
-        from src.config import settings
+        from src.config.settings import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS
 
         jwt_service = JWTService()
 
@@ -124,8 +124,8 @@ async def refresh_token(request: RefreshTokenRequest) -> TokenPair:
         return TokenPair(
             access_token=tokens["access_token"],
             refresh_token=tokens["refresh_token"],
-            access_expires_in=settings.access_token_expire_minutes * 60,
-            refresh_expires_in=settings.refresh_token_expire_days * 24 * 60 * 60,
+            access_expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+            refresh_expires_in=REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
         )
 
     except HTTPException:

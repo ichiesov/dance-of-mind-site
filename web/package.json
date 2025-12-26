@@ -19,6 +19,7 @@
     "mobx-react-lite": "^4.1.0",
     "motion": "^12.23.12",
     "next": "15.4.6",
+    "next-runtime-env": "^3.3.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-use-audio-player": "^4.0.2",

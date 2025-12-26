@@ -1,8 +1,9 @@
 import { TokenStorage } from './token-storage';
 import { AuthenticationError } from './auth-error';
 import { emitAuthError } from '@/hooks/use-auth-error-handler';
+import { env } from 'next-runtime-env';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE_URL = env('NEXT_PUBLIC_API_URL') || 'http://localhost:8000';
 
 export interface AuthSessionResponse {
   session_id: string;

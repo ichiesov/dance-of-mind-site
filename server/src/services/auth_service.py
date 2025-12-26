@@ -4,7 +4,12 @@ import uuid
 
 from src.database import get_supabase_client
 from src.models import AuthSession, AuthStatus, TokenPair
-from src.config import settings
+from src.config.settings import (
+    settings,
+    AUTH_SESSION_TIMEOUT,
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+    REFRESH_TOKEN_EXPIRE_DAYS
+)
 from src.services.jwt_service import JWTService
 from src.services.user_service import UserService
 from src.services.event_service import EventService
@@ -23,7 +28,7 @@ class AuthService:
         self._expire_old_sessions(phone_number)
 
         now = datetime.now(timezone.utc)
-        expires_at = now + timedelta(seconds=settings.auth_session_timeout)
+        expires_at = now + timedelta(seconds=AUTH_SESSION_TIMEOUT)
 
         data = {
             "phone_number": phone_number,
@@ -162,8 +167,8 @@ class AuthService:
         return TokenPair(
             access_token=tokens["access_token"],
             refresh_token=tokens["refresh_token"],
-            access_expires_in=settings.access_token_expire_minutes * 60,
-            refresh_expires_in=settings.refresh_token_expire_days * 24 * 60 * 60,
+            access_expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+            refresh_expires_in=REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
         )
 
     def _expire_old_sessions(self, phone_number: str) -> None:

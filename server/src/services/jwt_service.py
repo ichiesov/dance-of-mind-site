@@ -3,14 +3,19 @@ from typing import Dict, Optional
 import jwt
 from jwt.exceptions import InvalidTokenError
 
-from src.config import settings
+from src.config.settings import (
+    settings,
+    JWT_ALGORITHM,
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+    REFRESH_TOKEN_EXPIRE_DAYS
+)
 
 
 class JWTService:
     @staticmethod
     def create_access_token(user_id: str, phone_number: str) -> str:
         expire = datetime.now(timezone.utc) + timedelta(
-            minutes=settings.access_token_expire_minutes
+            minutes=ACCESS_TOKEN_EXPIRE_MINUTES
         )
 
         payload = {
@@ -24,13 +29,13 @@ class JWTService:
         return jwt.encode(
             payload,
             settings.jwt_secret_key,
-            algorithm=settings.jwt_algorithm
+            algorithm=JWT_ALGORITHM
         )
 
     @staticmethod
     def create_refresh_token(user_id: str, phone_number: str) -> str:
         expire = datetime.now(timezone.utc) + timedelta(
-            days=settings.refresh_token_expire_days
+            days=REFRESH_TOKEN_EXPIRE_DAYS
         )
 
         payload = {
@@ -44,7 +49,7 @@ class JWTService:
         return jwt.encode(
             payload,
             settings.jwt_secret_key,
-            algorithm=settings.jwt_algorithm
+            algorithm=JWT_ALGORITHM
         )
 
     @staticmethod
@@ -82,7 +87,7 @@ class JWTService:
             payload = jwt.decode(
                 token,
                 settings.jwt_secret_key,
-                algorithms=[settings.jwt_algorithm]
+                algorithms=[JWT_ALGORITHM]
             )
 
             # Дополнительная проверка типа токена

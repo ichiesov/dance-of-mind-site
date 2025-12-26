@@ -1,11 +1,11 @@
 # Базовый образ с Python
-FROM python:3.12-slim
+FROM python:3.14-slim
 
 # Установка зависимостей системы
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
- && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* && apt-get clean
 
 # Создание рабочей директории
 WORKDIR /app
@@ -18,8 +18,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY main.py .
 COPY src/ ./src/
 
-# Открытие порта (опционально, укажите нужный порт)
-EXPOSE 8000
+# Открытие порта
+EXPOSE 5555
 
 # Запуск приложения
 CMD ["python3", "main.py"]

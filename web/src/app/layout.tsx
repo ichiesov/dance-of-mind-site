@@ -1,6 +1,7 @@
 'use client';
 
 import localFont from 'next/font/local';
+import { PublicEnvScript } from 'next-runtime-env';
 import { Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { AppStoreProvider } from '@store/AppStoreProvider';
@@ -40,6 +41,9 @@ export default function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <PublicEnvScript />
+      </head>
       <body
         className={`${customSans.className} ${customSans.variable} ${geistMono.variable} antialiased w-screen min-h-screen`}
       >
