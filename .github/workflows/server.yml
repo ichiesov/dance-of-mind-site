@@ -1,0 +1,51 @@
+on:
+  push:
+    paths:
+      - "server/**"
+    branches: [ master ]
+
+env:
+  IMAGE_NAME: dance-of-mind-server
+
+jobs:
+  build-push-docker:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+          with:
+            path: server
+        - name: Build and push Docker image
+          uses: mr-smithers-excellent/docker-build-push@v6
+          id: build_and_push
+          with:
+            registry: ${{ secrets.DOCKER_REGISTRY }}
+            username: "token"
+            password: ${{ secrets.DOCKER_TOKEN }}
+            image: ${{ env.IMAGE_NAME }}
+            dockerfile: Dockerfile
+            tags: latest # todo change to smt normal
+
+  redeploy:
+      needs:
+        - build-push-docker
+      runs-on: ubuntu-latest
+      steps:
+        - name: Deploy Stage
+          uses: fjogeleit/http-request-action@v1
+          with:
+            url: ${{ secrets.REDEPLOY_URL }}
+            method: 'POST'
+            customHeaders: '{"Content-Type": "application/json"}'
+            timeout: '10000'
+            data: '{
+              "docker_container": {
+                "name": "dance-of-mind-server",
+                "image": "${{ secrets.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}",
+                "ports": { "8080/tcp": "8080" }
+              },
+              "docker_auth": {
+                "registry": "${{ secrets.DOCKER_REGISTRY }}",
+                "username": "token",
+                "password": "${{ secrets.DOCKER_TOKEN }}"
+                }
+              }'

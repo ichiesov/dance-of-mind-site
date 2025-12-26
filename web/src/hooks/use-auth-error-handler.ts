@@ -5,6 +5,13 @@ import { useEffect } from 'react';
 import { isAuthenticationError } from '@/lib/auth-error';
 import { TokenStorage } from '@/lib/token-storage';
 
+// Расширение глобального интерфейса для кастомного события
+declare global {
+  interface WindowEventMap {
+    'auth-error': CustomEvent;
+  }
+}
+
 export function useAuthErrorHandler() {
   const router = useRouter();
 
@@ -14,10 +21,10 @@ export function useAuthErrorHandler() {
       router.push('/auth');
     };
 
-    window.addEventListener('auth-error' as any, handleAuthError);
+    window.addEventListener('auth-error', handleAuthError);
 
     return () => {
-      window.removeEventListener('auth-error' as any, handleAuthError);
+      window.removeEventListener('auth-error', handleAuthError);
     };
   }, [router]);
 

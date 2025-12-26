@@ -105,3 +105,7 @@ server/lib/
 
 # FastAPI
 **/*.pid
+
+# Docker
+docker-compose.yml
+docker-compose.override.yml
