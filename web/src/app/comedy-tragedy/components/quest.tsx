@@ -9,7 +9,7 @@ import { TragedyImg } from './tragedy-img/tragedy-img';
 import { AudioPlayer } from './audio-player';
 import { SUCCESS_ANIMATION_DURATION_SEC, TRACKS } from '@comedy-tragedy/config';
 import { observer } from 'mobx-react-lite';
-import { EQuestState } from '@models';
+import { EPage, EQuestState } from '@models';
 import { motion } from 'motion/react';
 import { useEffect } from 'react';
 
@@ -28,13 +28,13 @@ export const Quest = observer(({ store }: TProps) => {
   const isError = store.state === EQuestState.Error;
   const isSolved = store.state === EQuestState.Solved;
 
-  // useEffect(() => {
-  //   if (!isSolved) return;
-  //   const id = window.setTimeout(() => {
-  //     router.push(EPage.WhoAreYou);
-  //   }, SUCCESS_ANIMATION_DURATION_SEC * 1000);
-  //   return () => clearTimeout(id);
-  // }, [isSolved, router]);
+  useEffect(() => {
+    if (!isSolved) return;
+    const id = window.setTimeout(() => {
+      router.push(EPage.WhoAreYou);
+    }, SUCCESS_ANIMATION_DURATION_SEC * 1000);
+    return () => clearTimeout(id);
+  }, [isSolved, router]);
 
   return (
     <div className="relative z-10 flex flex-col gap-6 items-center w-full max-w-5xl px-4">
