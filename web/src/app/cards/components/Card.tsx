@@ -47,7 +47,7 @@ export const Card = ({ cardId, isTarget, isSolved, onRevealed }: Props) => {
       controls.set({ rotateY: 0, z: 0 });
     } finally {
       setSpinning(false);
-      if (isTarget) {
+      if (isTarget || isSolved) {
         onRevealed(cardId);
         setRevealed(true);
       }

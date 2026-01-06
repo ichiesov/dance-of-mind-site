@@ -45,6 +45,12 @@ export const CardsGrid = observer(({ initialProgress }: CardsGridProps) => {
   const handleQuestSolve = async (questId: string) => {
     console.log('SOLVE QUEST', questId);
 
+    // Повторно решенные карты скипаются
+    if (store.isSolved(questId)) {
+      store.setActiveQuest('');
+      return;
+    }
+
     // Отмечаем карту как решенную и сохраняем прогресс
     store.markAsSolved(questId);
 
