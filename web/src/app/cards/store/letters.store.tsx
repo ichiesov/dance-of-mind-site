@@ -17,56 +17,80 @@ const getLetters = (source?: string): TIdName<string>[] => {
   }));
 };
 
-const createLocalStore = (questId: string, onSolved: (questId: string) => void) => ({
-  letters: getLetters(QUEST_PHRASE),
-  required: new Set(splitToLetters(QUEST_CONFIG)),
-  selectedIds: new Set<string>(),
-  selectedLetters: new Set<string>(),
-  onSolved: onSolved,
+const createLocalStore = (
+  questId: string,
+  isSolved: boolean,
+  onSolved: (questId: string) => void
+) => {
+  const letters = getLetters(QUEST_PHRASE);
+  const required = new Set(splitToLetters(QUEST_CONFIG));
 
-  isSelected(item: TIdName<string>) {
-    return this.selectedIds.has(item.id);
-  },
-
-  toggle(item: TIdName<string>) {
-    const { id, name } = item;
-
-    if (this.selectedIds.has(id)) {
-      this.selectedIds.delete(id);
-      this.selectedLetters.delete(name);
-    } else {
-      this.selectedIds.add(id);
-      this.selectedLetters.add(name);
+  const buildSelected = () => {
+    if (!isSolved) {
+      return new Map<string, string>();
     }
 
-    this.checkSolved();
-  },
+    const arr: [string, string][] = Array.from(required.values()).map((letter) => {
+      const item = letters.find(({ id, name }) => name === letter);
+      return [item!.id, item!.name];
+    });
 
-  reshuffle() {
-    this.letters = shuffle(this.letters);
-    this.selectedIds.clear();
-    this.selectedLetters.clear();
-  },
+    return new Map(arr);
+  };
 
-  checkSolved() {
-    const isAllRequiredSelected = this.required.values().every((k) => this.selectedLetters.has(k));
+  const selected = buildSelected();
 
-    if (!isAllRequiredSelected) {
-      return;
-    }
+  return {
+    letters,
+    required,
+    selected,
+    onSolved: onSolved,
 
-    this.onSolved(questId);
-  },
-});
+    isSelected(item: TIdName<string>) {
+      return this.selected.has(item.id);
+    },
+
+    toggle(item: TIdName<string>) {
+      const { id, name } = item;
+
+      if (this.selected.has(id)) {
+        this.selected.delete(id);
+      } else {
+        this.selected.set(id, name);
+      }
+
+      this.checkSolved();
+    },
+
+    reshuffle() {
+      this.letters = shuffle(this.letters);
+      this.selected.clear();
+    },
+
+    checkSolved() {
+      const selectedLetters = new Set(this.selected.values());
+
+      const isAllRequiredSelected = this.required.values().every((k) => selectedLetters.has(k));
+
+      if (!isAllRequiredSelected) {
+        return;
+      }
+
+      this.onSolved(questId);
+    },
+  };
+};
 
 export type TLettersStore = ReturnType<typeof createLocalStore>;
 
 export const useLettersStore = ({
   questId,
+  isSolved,
   onSolved,
 }: {
   questId: string;
+  isSolved: boolean;
   onSolved: (questId: string) => void;
 }) => {
-  return useLocalObservable(() => createLocalStore(questId, onSolved));
+  return useLocalObservable(() => createLocalStore(questId, isSolved, onSolved));
 };

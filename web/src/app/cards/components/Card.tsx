@@ -6,7 +6,8 @@ import { cn } from '@utils';
 import { motion, useAnimationControls } from 'motion/react';
 import { useEffect, useState } from 'react';
 
-import cardPlaceholder from 'images/cards/back.svg';
+import cardBack from 'images/cards/back.svg';
+import cardFace from 'images/cards/placeholder.svg';
 
 import './card-animated-border.scss';
 
@@ -14,24 +15,16 @@ type Props = {
   cardId: string;
   isTarget: boolean;
   isSolved: boolean;
+  isActive: boolean;
   onRevealed: (cardId: string) => void;
 };
 
-import cardFace from 'images/cards/placeholder.svg';
-
-export const Card = ({ cardId, isTarget, isSolved, onRevealed }: Props) => {
+export const Card = ({ cardId, isTarget, isSolved, isActive, onRevealed }: Props) => {
   const controls = useAnimationControls();
   const [revealed, setRevealed] = useState(isSolved);
   const [spinning, setSpinning] = useState(false);
 
-  // Синхронизируем локальное состояние с пропом isSolved
-  useEffect(() => {
-    if (isSolved) {
-      setRevealed(true);
-    }
-  }, [isSolved]);
-
-  const handleClick = async () => {
+  const startCardSpin = async () => {
     if (spinning) return;
     setSpinning(true);
     try {
@@ -54,10 +47,18 @@ export const Card = ({ cardId, isTarget, isSolved, onRevealed }: Props) => {
     }
   };
 
+  useEffect(() => {
+    if (isActive) {
+      setRevealed(true);
+    } else {
+      setRevealed(isSolved);
+    }
+  }, [isActive, isSolved]);
+
   return (
     <div className={cn('w-full perspective-distant transform-3d')}>
       <motion.div
-        onClick={handleClick}
+        onClick={startCardSpin}
         animate={controls}
         whileTap={{ scale: 1.02 }}
         style={{ rotateY: 0, z: 0 }}
@@ -70,8 +71,8 @@ export const Card = ({ cardId, isTarget, isSolved, onRevealed }: Props) => {
         >
           <div className="relative w-full" style={{ aspectRatio: '250 / 350' }}>
             <Image
-              src={revealed ? cardFace : cardPlaceholder}
-              alt={revealed ? 'Playing card face' : 'Playing card back'}
+              src={revealed ? cardFace : cardBack}
+              alt={revealed ? `${cardId} face` : `${cardId} back`}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
               priority={false}

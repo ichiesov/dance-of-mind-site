@@ -1,56 +1,62 @@
 import { CARDS, CARDS_TOTAL_COUNT } from '@cards/config';
 import { useLocalObservable } from 'mobx-react-lite';
 
-const createLocalStore = () => ({
-  target: '2-of-clubs',
-  activeQuest: '',
-  solvedCards: new Set<string>(),
+const pickNext = (solved: Set<string>): string | null => {
+  if (solved.size >= CARDS_TOTAL_COUNT) {
+    return null;
+  }
 
-  isTarget(cardId: string) {
-    return this.target === cardId;
-  },
+  const available = CARDS.filter((c) => !solved.has(c));
+  const rnd = Math.floor(Math.random() * available.length);
+  return available[rnd];
+};
 
-  isSolved(cardId: string) {
-    return this.solvedCards.has(cardId);
-  },
+const createLocalStore = ({ solvedCardsIds }: Props) => {
+  const solvedCards = new Set<string>(solvedCardsIds);
+  const target = pickNext(solvedCards);
 
-  setActiveQuest(cardId: string) {
-    this.activeQuest = cardId;
-  },
+  return {
+    target,
+    activeQuest: '',
+    solvedCards,
 
-  initializeProgress(completedQuests: string[]) {
-    // Инициализируем solvedCards из загруженного прогресса
-    this.solvedCards = new Set(completedQuests);
+    isTarget(cardId: string) {
+      return this.target === cardId;
+    },
 
-    // Выбираем первый таргет среди не решенных карт
-    this.nextTarget();
-  },
+    isSolved(cardId: string) {
+      return this.solvedCards.has(cardId);
+    },
 
-  markAsSolved(cardId: string) {
-    // Проверяем, что карта еще не решена
-    if (this.solvedCards.has(cardId)) {
-      return;
-    }
+    setActiveQuest(cardId: string) {
+      this.activeQuest = cardId;
+    },
 
-    this.solvedCards.add(cardId);
-  },
+    markAsSolved(cardId: string) {
+      // Проверяем, что карта еще не решена
+      if (this.solvedCards.has(cardId)) {
+        return;
+      }
 
-  nextTarget() {
-    if (this.solvedCards.size >= CARDS_TOTAL_COUNT) {
-      return;
-    }
+      this.solvedCards.add(cardId);
+    },
 
-    this.activeQuest = '';
+    nextTarget() {
+      const newTarget = pickNext(this.solvedCards);
+      if (!newTarget) {
+        return;
+      }
 
-    // Выбираем следующий таргет случайно из не открытых
-    const available = CARDS.filter((c) => !this.solvedCards.has(c));
-    const rnd = Math.floor(Math.random() * available.length);
-    this.target = available[rnd];
-  },
-});
+      this.activeQuest = '';
+      this.target = newTarget;
+    },
+  };
+};
 
-export type TCardsStore = ReturnType<typeof createLocalStore>;
+type Props = {
+  solvedCardsIds: string[];
+};
 
-export const useCardsStore = () => {
-  return useLocalObservable(() => createLocalStore());
+export const useCardsStore = (props: Props) => {
+  return useLocalObservable(() => createLocalStore(props));
 };
